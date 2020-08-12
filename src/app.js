@@ -4,22 +4,49 @@ import { Provider } from 'react-redux';
 import './firebase/firebase';
 
 import { startSetExpenses } from './actions/expenses';
-import AppRouter from './routers/AppRouter';
-import configureStore from './store/configureStore';
+import { login, logout } from './actions/auth';
+import AppRouter, { history } from './routers/AppRouter';
 
+
+import configureStore from './store/configureStore';
+import { firebase } from './firebase/firebase';
 import 'react-dates/lib/css/_datepicker.css';
 import './styles/styles.scss';
 import 'normalize.css/normalize.css';
 
 const store = configureStore();
+let hasRendered = false;
+const renderApp = () => {
+    if (!hasRendered) {
+        ReactDOM.render(jsx, document.getElementById('app'));
+        hasRendered = true;
+    }
+};
+
 
 const jsx = (
     <Provider store={store}>
         <AppRouter />
     </Provider>
-)
+);
 
 ReactDOM.render(<p>Loading . . .</p>, document.getElementById('app'));
-store.dispatch(startSetExpenses()).then(() => {
-    ReactDOM.render(jsx, document.getElementById('app'));
+
+
+
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        store.dispatch(login(user.uid));
+        console.log(user)
+        store.dispatch(startSetExpenses()).then(() => {
+            renderApp();
+            if (history.location.pathname === '/') {
+                history.push('/dashboard');
+            }
+        });
+    } else {
+        store.dispatch(logout());
+        renderApp();
+        history.push('/');
+    }
 });
