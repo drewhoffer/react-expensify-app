@@ -6,7 +6,7 @@ import './firebase/firebase';
 import { startSetExpenses } from './actions/expenses';
 import { login, logout } from './actions/auth';
 import AppRouter, { history } from './routers/AppRouter';
-
+import LoadingPage from './components/LoadingPage';
 
 import configureStore from './store/configureStore';
 import { firebase } from './firebase/firebase';
@@ -30,7 +30,7 @@ const jsx = (
     </Provider>
 );
 
-ReactDOM.render(<p>Loading . . .</p>, document.getElementById('app'));
+ReactDOM.render(<LoadingPage />, document.getElementById('app'));
 
 
 
